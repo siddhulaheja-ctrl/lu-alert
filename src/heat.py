@@ -1,9 +1,10 @@
 """Heat-stress risk engine: Open-Meteo hourly weather -> WBGT -> work/rest level."""
 import json
 import math
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
-from datetime import date
 
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 ARCHIVE_URL = "https://archive-api.open-meteo.com/v1/archive"
@@ -33,8 +34,15 @@ def fetch_hourly(lat, lon, day=None):
         url, params["forecast_days"] = FORECAST_URL, 1
     else:
         url, params["start_date"], params["end_date"] = ARCHIVE_URL, day, day
-    with urllib.request.urlopen(f"{url}?{urllib.parse.urlencode(params)}", timeout=15) as r:
-        h = json.load(r)["hourly"]
+    for attempt in range(3):  # Open-Meteo's free tier sometimes answers 429/503; brief backoff then retry
+        try:
+            with urllib.request.urlopen(f"{url}?{urllib.parse.urlencode(params)}", timeout=15) as r:
+                h = json.load(r)["hourly"]
+            break
+        except urllib.error.HTTPError as e:
+            if e.code not in (429, 500, 502, 503) or attempt == 2:
+                raise
+            time.sleep(1.5 * (attempt + 1))
     return [
         (int(t[11:13]), temp, rh)
         for t, temp, rh in zip(h["time"], h["temperature_2m"], h["relative_humidity_2m"])
