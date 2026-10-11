@@ -1,0 +1,5 @@
+.env
+private.key
+__pycache__/
+.aws-sam/
+.claude/

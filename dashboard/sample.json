@@ -1,0 +1,510 @@
+{
+ "today": [
+  {
+   "name": "Ramesh Kumar",
+   "phone": "91xxxxxx4100",
+   "place": "Delhi",
+   "lat": 28.65,
+   "lon": 77.23,
+   "work": "heavy",
+   "lang": "hi",
+   "level": 1,
+   "color": "yellow",
+   "window": [
+    11,
+    19
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 27.0,
+   "tmax": 33
+  },
+  {
+   "name": "Sunita Devi",
+   "phone": "91xxxxxx4137",
+   "place": "Delhi",
+   "lat": 28.7,
+   "lon": 77.1,
+   "work": "moderate",
+   "lang": "hi",
+   "level": 0,
+   "color": "green",
+   "window": [
+    6,
+    20
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 26.8,
+   "tmax": 33
+  },
+  {
+   "name": "Mohd. Salim",
+   "phone": "91xxxxxx4174",
+   "place": "Delhi",
+   "lat": 28.55,
+   "lon": 77.25,
+   "work": "light",
+   "lang": "hi",
+   "level": 0,
+   "color": "green",
+   "window": [
+    6,
+    20
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 27.1,
+   "tmax": 33
+  },
+  {
+   "name": "Ajay Yadav",
+   "phone": "91xxxxxx4211",
+   "place": "Gurugram",
+   "lat": 28.46,
+   "lon": 77.03,
+   "work": "heavy",
+   "lang": "hi",
+   "level": 1,
+   "color": "yellow",
+   "window": [
+    11,
+    17
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 26.7,
+   "tmax": 33
+  },
+  {
+   "name": "Pooja Sharma",
+   "phone": "91xxxxxx4248",
+   "place": "Gurugram",
+   "lat": 28.42,
+   "lon": 77.05,
+   "work": "moderate",
+   "lang": "en",
+   "level": 0,
+   "color": "green",
+   "window": [
+    6,
+    20
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 26.7,
+   "tmax": 33
+  },
+  {
+   "name": "Rakesh Singh",
+   "phone": "91xxxxxx4285",
+   "place": "Noida",
+   "lat": 28.58,
+   "lon": 77.33,
+   "work": "heavy",
+   "lang": "hi",
+   "level": 1,
+   "color": "yellow",
+   "window": [
+    11,
+    19
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 27.1,
+   "tmax": 33
+  },
+  {
+   "name": "Imran Khan",
+   "phone": "91xxxxxx4322",
+   "place": "Noida",
+   "lat": 28.54,
+   "lon": 77.39,
+   "work": "moderate",
+   "lang": "hi",
+   "level": 0,
+   "color": "green",
+   "window": [
+    6,
+    20
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 27.0,
+   "tmax": 33
+  },
+  {
+   "name": "Kailash Meena",
+   "phone": "91xxxxxx4359",
+   "place": "Jaipur",
+   "lat": 26.91,
+   "lon": 75.79,
+   "work": "heavy",
+   "lang": "hi",
+   "level": 1,
+   "color": "yellow",
+   "window": [
+    12,
+    15
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 26.1,
+   "tmax": 35
+  },
+  {
+   "name": "Vinod Gupta",
+   "phone": "91xxxxxx4396",
+   "place": "Lucknow",
+   "lat": 26.84,
+   "lon": 80.92,
+   "work": "moderate",
+   "lang": "hi",
+   "level": 0,
+   "color": "green",
+   "window": [
+    6,
+    20
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 24.2,
+   "tmax": 27
+  },
+  {
+   "name": "Manoj Paswan",
+   "phone": "91xxxxxx4433",
+   "place": "Patna",
+   "lat": 25.59,
+   "lon": 85.14,
+   "work": "heavy",
+   "lang": "hi",
+   "level": 0,
+   "color": "green",
+   "window": [
+    6,
+    20
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 25.3,
+   "tmax": 29
+  },
+  {
+   "name": "Santosh Patil",
+   "phone": "91xxxxxx4470",
+   "place": "Mumbai",
+   "lat": 19.08,
+   "lon": 72.88,
+   "work": "moderate",
+   "lang": "en",
+   "level": 1,
+   "color": "yellow",
+   "window": [
+    11,
+    19
+   ],
+   "peak_hour": 12,
+   "peak_wbgt": 28.4,
+   "tmax": 37
+  },
+  {
+   "name": "Murugan S.",
+   "phone": "91xxxxxx4507",
+   "place": "Chennai",
+   "lat": 13.08,
+   "lon": 80.27,
+   "work": "heavy",
+   "lang": "en",
+   "level": 2,
+   "color": "orange",
+   "window": [
+    10,
+    15
+   ],
+   "peak_hour": 11,
+   "peak_wbgt": 27.9,
+   "tmax": 33
+  },
+  {
+   "name": "Srinivas Rao",
+   "phone": "91xxxxxx4544",
+   "place": "Hyderabad",
+   "lat": 17.39,
+   "lon": 78.49,
+   "work": "light",
+   "lang": "en",
+   "level": 0,
+   "color": "green",
+   "window": [
+    6,
+    20
+   ],
+   "peak_hour": 13,
+   "peak_wbgt": 25.4,
+   "tmax": 33
+  },
+  {
+   "name": "Hitesh Patel",
+   "phone": "91xxxxxx4581",
+   "place": "Ahmedabad",
+   "lat": 23.02,
+   "lon": 72.57,
+   "work": "heavy",
+   "lang": "en",
+   "level": 2,
+   "color": "orange",
+   "window": [
+    12,
+    17
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 28.3,
+   "tmax": 37
+  }
+ ],
+ "2024-05-29": [
+  {
+   "name": "Ramesh Kumar",
+   "phone": "91xxxxxx4100",
+   "place": "Delhi",
+   "lat": 28.65,
+   "lon": 77.23,
+   "work": "heavy",
+   "lang": "hi",
+   "level": 4,
+   "color": "extreme",
+   "window": [
+    10,
+    18
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 32.1,
+   "tmax": 46
+  },
+  {
+   "name": "Sunita Devi",
+   "phone": "91xxxxxx4137",
+   "place": "Delhi",
+   "lat": 28.7,
+   "lon": 77.1,
+   "work": "moderate",
+   "lang": "hi",
+   "level": 4,
+   "color": "extreme",
+   "window": [
+    12,
+    14
+   ],
+   "peak_hour": 15,
+   "peak_wbgt": 31.9,
+   "tmax": 46
+  },
+  {
+   "name": "Mohd. Salim",
+   "phone": "91xxxxxx4174",
+   "place": "Delhi",
+   "lat": 28.55,
+   "lon": 77.25,
+   "work": "light",
+   "lang": "hi",
+   "level": 2,
+   "color": "orange",
+   "window": [
+    10,
+    16
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 32.0,
+   "tmax": 46
+  },
+  {
+   "name": "Ajay Yadav",
+   "phone": "91xxxxxx4211",
+   "place": "Gurugram",
+   "lat": 28.46,
+   "lon": 77.03,
+   "work": "heavy",
+   "lang": "hi",
+   "level": 4,
+   "color": "extreme",
+   "window": [
+    10,
+    17
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 31.8,
+   "tmax": 46
+  },
+  {
+   "name": "Pooja Sharma",
+   "phone": "91xxxxxx4248",
+   "place": "Gurugram",
+   "lat": 28.42,
+   "lon": 77.05,
+   "work": "moderate",
+   "lang": "en",
+   "level": 4,
+   "color": "extreme",
+   "window": [
+    11,
+    13
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 31.8,
+   "tmax": 46
+  },
+  {
+   "name": "Rakesh Singh",
+   "phone": "91xxxxxx4285",
+   "place": "Noida",
+   "lat": 28.58,
+   "lon": 77.33,
+   "work": "heavy",
+   "lang": "hi",
+   "level": 4,
+   "color": "extreme",
+   "window": [
+    10,
+    18
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 32.0,
+   "tmax": 46
+  },
+  {
+   "name": "Imran Khan",
+   "phone": "91xxxxxx4322",
+   "place": "Noida",
+   "lat": 28.54,
+   "lon": 77.39,
+   "work": "moderate",
+   "lang": "hi",
+   "level": 4,
+   "color": "extreme",
+   "window": [
+    11,
+    14
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 32.3,
+   "tmax": 46
+  },
+  {
+   "name": "Kailash Meena",
+   "phone": "91xxxxxx4359",
+   "place": "Jaipur",
+   "lat": 26.91,
+   "lon": 75.79,
+   "work": "heavy",
+   "lang": "hi",
+   "level": 4,
+   "color": "extreme",
+   "window": [
+    10,
+    17
+   ],
+   "peak_hour": 14,
+   "peak_wbgt": 31.2,
+   "tmax": 46
+  },
+  {
+   "name": "Vinod Gupta",
+   "phone": "91xxxxxx4396",
+   "place": "Lucknow",
+   "lat": 26.84,
+   "lon": 80.92,
+   "work": "moderate",
+   "lang": "hi",
+   "level": 4,
+   "color": "extreme",
+   "window": [
+    10,
+    17
+   ],
+   "peak_hour": 15,
+   "peak_wbgt": 33.5,
+   "tmax": 46
+  },
+  {
+   "name": "Manoj Paswan",
+   "phone": "91xxxxxx4433",
+   "place": "Patna",
+   "lat": 25.59,
+   "lon": 85.14,
+   "work": "heavy",
+   "lang": "hi",
+   "level": 4,
+   "color": "extreme",
+   "window": [
+    8,
+    20
+   ],
+   "peak_hour": 13,
+   "peak_wbgt": 34.9,
+   "tmax": 42
+  },
+  {
+   "name": "Santosh Patil",
+   "phone": "91xxxxxx4470",
+   "place": "Mumbai",
+   "lat": 19.08,
+   "lon": 72.88,
+   "work": "moderate",
+   "lang": "en",
+   "level": 1,
+   "color": "yellow",
+   "window": [
+    9,
+    16
+   ],
+   "peak_hour": 11,
+   "peak_wbgt": 28.6,
+   "tmax": 34
+  },
+  {
+   "name": "Murugan S.",
+   "phone": "91xxxxxx4507",
+   "place": "Chennai",
+   "lat": 13.08,
+   "lon": 80.27,
+   "work": "heavy",
+   "lang": "en",
+   "level": 4,
+   "color": "extreme",
+   "window": [
+    11,
+    16
+   ],
+   "peak_hour": 12,
+   "peak_wbgt": 31.8,
+   "tmax": 41
+  },
+  {
+   "name": "Srinivas Rao",
+   "phone": "91xxxxxx4544",
+   "place": "Hyderabad",
+   "lat": 17.39,
+   "lon": 78.49,
+   "work": "light",
+   "lang": "en",
+   "level": 0,
+   "color": "green",
+   "window": [
+    6,
+    20
+   ],
+   "peak_hour": 15,
+   "peak_wbgt": 29.7,
+   "tmax": 39
+  },
+  {
+   "name": "Hitesh Patel",
+   "phone": "91xxxxxx4581",
+   "place": "Ahmedabad",
+   "lat": 23.02,
+   "lon": 72.57,
+   "work": "heavy",
+   "lang": "en",
+   "level": 4,
+   "color": "extreme",
+   "window": [
+    11,
+    18
+   ],
+   "peak_hour": 16,
+   "peak_wbgt": 32.3,
+   "tmax": 43
+  }
+ ]
+}

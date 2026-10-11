@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lu Alert Coordinator</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+  :root {
+    --page: #f9f9f7; --surface: #fcfcfb; --ink: #0b0b0b; --ink2: #52514e; --muted: #898781; --line: #e4e3de;
+    --extreme: #8e2a8b; --red: #d03b3b; --orange: #ec835a; --yellow: #fab219; --green: #0ca30c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --page: #0d0d0d; --surface: #1a1a19; --ink: #fff; --ink2: #c3c2b7; --line: #2c2c2a; --extreme: #c25bbf; }
+    .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) brightness(.85) contrast(.9); }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink); font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 1200px; margin: 0 auto; padding: 20px 16px 40px; }
+  header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+  h1 { font-size: 22px; margin: 0; } h1 small { color: var(--ink2); font-weight: 400; font-size: 14px; display: block; }
+  .controls { display: flex; gap: 8px; flex-wrap: wrap; }
+  [hidden] { display: none !important; }
+  select, button, input { font: inherit; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+  button.primary { background: var(--red); border-color: var(--red); color: #fff; font-weight: 600; cursor: pointer; }
+  button.primary:disabled { opacity: .45; cursor: default; }
+  .tiles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 16px; }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+  .tile .n { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .tile .l { color: var(--ink2); font-size: 13px; display: flex; gap: 6px; align-items: center; }
+  .grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px; }
+  #map { height: 480px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: auto; max-height: 480px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; position: sticky; top: 0; background: var(--surface); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .sub { color: var(--muted); font-size: 12px; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+  .note { color: var(--muted); font-size: 13px; margin-top: 14px; }
+  @media (max-width: 860px) {
+    .tiles { grid-template-columns: repeat(3, 1fr); }
+    .grid { grid-template-columns: 1fr; }
+    #map { height: 340px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Lu Alert <small>Coordinator view: who is at heat risk today</small></h1>
+    <div class="controls">
+      <input id="key" type="password" placeholder="Admin key (for live data)" aria-label="Admin key" autocomplete="off">
+      <select id="day" aria-label="Day">
+        <option value="today">Today (live forecast)</option>
+        <option value="2024-05-29">Replay: 29 May 2024 heatwave</option>
+      </select>
+      <button class="primary" id="send">Send alert</button>
+    </div>
+  </header>
+
+  <section class="tiles" id="tiles" aria-label="Workers by risk level"></section>
+
+  <section class="grid">
+    <div id="map" role="img" aria-label="Map of workers coloured by heat risk"></div>
+    <div class="card">
+      <table>
+        <thead><tr><th>Worker</th><th>Work</th><th>Risk</th><th>Danger hours</th><th class="num">Max °C</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </section>
+  <p class="note" id="note"></p>
+</main>
+
+<script>
+const API_BASE = 'https://bjeyu1quqd.execute-api.us-east-1.amazonaws.com';  // `ApiUrl` stack output
+let KEY = '';
+try { KEY = localStorage.getItem('luAdminKey') || ''; } catch {}
+let API_URL = KEY ? API_BASE : '';  // empty = sample.json
+let auth = { headers: { 'x-admin-key': KEY } };
+const keyBox = document.getElementById('key');
+keyBox.hidden = !!KEY;
+keyBox.onchange = () => {
+  KEY = keyBox.value.trim();
+  try { localStorage.setItem('luAdminKey', KEY); } catch {}
+  API_URL = API_BASE; auth = { headers: { 'x-admin-key': KEY } }; keyBox.hidden = true;
+  load(document.getElementById('day').value);
+};
+
+const LEVELS = [  // index = risk level from the backend; icon + label so colour never carries meaning alone
+  { key: 'green',   label: 'Safe',    icon: '✓' },
+  { key: 'yellow',  label: 'Caution', icon: '!' },
+  { key: 'orange',  label: 'High',    icon: '▲' },
+  { key: 'red',     label: 'Danger',  icon: '◆' },
+  { key: 'extreme', label: 'Extreme', icon: '✖' },
+];
+const css = k => getComputedStyle(document.documentElement).getPropertyValue('--' + k).trim();
+const hr = h => `${h % 12 || 12} ${h < 12 ? 'AM' : 'PM'}`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+const map = L.map('map', { scrollWheelZoom: false }).setView([23, 79], 5);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors', maxZoom: 18,
+}).addTo(map);
+const layer = L.layerGroup().addTo(map);
+let bounds = null;
+const fit = () => { map.invalidateSize(); if (bounds) map.fitBounds(bounds, { padding: [30, 30], maxZoom: 10 }); };
+new ResizeObserver(fit).observe(document.getElementById('map'));  // layout can settle after first render
+
+async function load(day) {
+  const r = API_URL ? await fetch(`${API_URL}/workers?date=${day === 'today' ? '' : day}`, auth) : await fetch('sample.json');
+  if (r.status === 401) {
+    try { localStorage.removeItem('luAdminKey'); } catch {}
+    API_URL = ''; keyBox.hidden = false; keyBox.value = ''; keyBox.placeholder = 'Wrong key, try again';
+    return load(day);
+  }
+  const data = API_URL ? await r.json() : (await r.json())[day];
+  render(data.sort((a, b) => b.level - a.level || a.place.localeCompare(b.place)));
+}
+
+function render(ws) {
+  const counts = LEVELS.map((_, i) => ws.filter(w => w.level === i).length);
+  document.getElementById('tiles').innerHTML = LEVELS.map((L, i) => `
+    <div class="tile"><div class="n">${counts[i]}</div>
+      <div class="l"><span class="dot" style="background:${css(L.key)}"></span>${L.icon} ${L.label}</div></div>`).reverse().join('');
+
+  document.getElementById('rows').innerHTML = ws.map(w => {
+    const L = LEVELS[w.level];
+    return `<tr>
+      <td>${esc(w.name)}<div class="sub">${esc(w.place)} · ${esc(w.phone)}</div></td>
+      <td>${esc(w.work)}</td>
+      <td><span class="badge"><span class="dot" style="background:${css(L.key)}"></span>${L.icon} ${L.label}</span></td>
+      <td>${w.level ? `${hr(w.window[0])} – ${hr(w.window[1])}` : '<span class="sub">none</span>'}</td>
+      <td class="num">${w.tmax}</td></tr>`;
+  }).join('');
+
+  layer.clearLayers();
+  ws.forEach((w, i) => {
+    const L_ = LEVELS[w.level];
+    // small deterministic offset so workers in the same city don't stack on one point
+    const ll = [w.lat + ((i % 3) - 1) * 0.02, w.lon + ((i % 5) - 2) * 0.02];
+    L.circleMarker(ll, { radius: 8, weight: 2, color: css('surface'), fillColor: css(L_.key), fillOpacity: 1 })
+      .bindTooltip(`<b>${esc(w.name)}</b><br>${esc(w.place)} · ${esc(w.work)} work<br>${L_.icon} ${L_.label}, max ${w.tmax}°C`)
+      .addTo(layer);
+  });
+  bounds = ws.length ? ws.map(w => [w.lat, w.lon]) : null;
+  fit();
+
+  const atRisk = ws.filter(w => w.level > 0).length;
+  const btn = document.getElementById('send');
+  btn.textContent = `Send alert to ${atRisk} at-risk worker${atRisk === 1 ? '' : 's'}`;
+  btn.disabled = !atRisk;
+  document.getElementById('note').textContent =
+    `Risk = heat stress (WBGT from temperature + humidity) against safe work/rest limits for each worker's workload. Green workers get no alert.` +
+    (API_URL ? '' : ' Showing sample workers with real weather data.');
+}
+
+document.getElementById('day').onchange = e => load(e.target.value);
+document.getElementById('send').onclick = async () => {
+  const day = document.getElementById('day').value;
+  if (!API_URL) return alert('Sample mode: sending is enabled once the backend is deployed.');
+  const r = await fetch(`${API_URL}/broadcast?date=${day === 'today' ? '' : day}`, { method: 'POST', ...auth });
+  alert(r.ok ? 'Alerts are being sent.' : 'Sending failed. Check the backend logs.');
+};
+load('today');
+</script>
+</body>
+</html>

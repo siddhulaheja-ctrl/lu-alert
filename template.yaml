@@ -1,0 +1,100 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Lu Alert - daily heat-stress alerts for outdoor workers (WhatsApp + Hindi voice)
+
+Parameters:
+  AdminKey: { Type: String, NoEcho: true, MinLength: 16 }
+  VonageApiKey: { Type: String, NoEcho: true, Default: "" }
+  VonageApiSecret: { Type: String, NoEcho: true, Default: "" }
+  VonageSignatureSecret: { Type: String, NoEcho: true, Default: "" }
+  VonageWaFrom: { Type: String, Default: "14157386102" }
+  VonageMessagesUrl: { Type: String, Default: "https://messages-sandbox.nexmo.com/v1/messages" }
+  TelegramBotToken: { Type: String, NoEcho: true, Default: "" }
+
+Globals:
+  Function:
+    Runtime: python3.13
+    CodeUri: src/
+    MemorySize: 256
+    Environment:
+      Variables:
+        TABLE: !Ref UsersTable
+        BUCKET: !Ref AudioBucket
+        ADMIN_KEY: !Ref AdminKey
+        VONAGE_API_KEY: !Ref VonageApiKey
+        VONAGE_API_SECRET: !Ref VonageApiSecret
+        VONAGE_SIGNATURE_SECRET: !Ref VonageSignatureSecret
+        VONAGE_WA_FROM: !Ref VonageWaFrom
+        VONAGE_MESSAGES_URL: !Ref VonageMessagesUrl
+        TELEGRAM_BOT_TOKEN: !Ref TelegramBotToken
+
+Resources:
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions: [{ AttributeName: phone, AttributeType: S }]
+      KeySchema: [{ AttributeName: phone, KeyType: HASH }]
+
+  AudioBucket:  # private; Vonage fetches voice notes via short-lived presigned URLs
+    Type: AWS::S3::Bucket
+    Properties:
+      LifecycleConfiguration:
+        Rules: [{ Status: Enabled, ExpirationInDays: 7 }]
+
+  Api:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins: ["*"]
+        AllowMethods: [GET, POST]
+        AllowHeaders: [content-type, x-admin-key]
+
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.api
+      Timeout: 29
+      Environment:
+        Variables:
+          DAILY_FN: !Ref DailyFunction
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref UsersTable }
+        - S3CrudPolicy: { BucketName: !Ref AudioBucket }
+        - LambdaInvokePolicy: { FunctionName: !Ref DailyFunction }
+        - Statement: [{ Effect: Allow, Action: polly:SynthesizeSpeech, Resource: "*" }]
+      Events:
+        Inbound: { Type: HttpApi, Properties: { ApiId: !Ref Api, Method: POST, Path: /inbound } }
+        Telegram: { Type: HttpApi, Properties: { ApiId: !Ref Api, Method: POST, Path: /telegram } }
+        Status: { Type: HttpApi, Properties: { ApiId: !Ref Api, Method: POST, Path: /status } }
+        Workers: { Type: HttpApi, Properties: { ApiId: !Ref Api, Method: GET, Path: /workers } }
+        Broadcast: { Type: HttpApi, Properties: { ApiId: !Ref Api, Method: POST, Path: /broadcast } }
+
+  DailyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: app.daily
+      Timeout: 300
+      Policies:
+        - DynamoDBReadPolicy: { TableName: !Ref UsersTable }
+        - S3CrudPolicy: { BucketName: !Ref AudioBucket }
+        - Statement: [{ Effect: Allow, Action: polly:SynthesizeSpeech, Resource: "*" }]
+      Events:
+        Morning:
+          Type: ScheduleV2
+          Properties:
+            ScheduleExpression: cron(0 6 * * ? *)
+            ScheduleExpressionTimezone: Asia/Kolkata
+
+Outputs:
+  ApiUrl:
+    Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com
+  InboundWebhook:
+    Description: Paste into the Vonage Messages sandbox "Inbound" webhook
+    Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/inbound
+  TelegramWebhook:
+    Description: Registered with Telegram setWebhook (secret_token derived from the bot token)
+    Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/telegram
+  StatusWebhook:
+    Description: Paste into the Vonage Messages sandbox "Status" webhook
+    Value: !Sub https://${Api}.execute-api.${AWS::Region}.amazonaws.com/status
